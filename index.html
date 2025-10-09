@@ -880,238 +880,170 @@
     <!-- 从之前的版本复制所有JavaScript函数到这里 -->
     <script>
         // 基础功能
-        function showSection(sectionId) {
-            // 隐藏所有部分
-            document.querySelectorAll('.section').forEach(section => {
-                section.classList.remove('active');
-            });
-            
-            // 移除所有导航激活状态
-            document.querySelectorAll('.nav-item').forEach(item => {
-                item.classList.remove('active');
-            });
-            
-            // 显示选中部分
-            document.getElementById(sectionId).classList.add('active');
-            
-            // 激活对应导航
-            event.target.classList.add('active');
-        }
-
-        function toggleTheme() {
-            document.body.classList.toggle('dark-mode');
-        }
-
-        // 实时时钟
-        function updateClock() {
-            const now = new Date();
-            const timeString = now.toLocaleTimeString();
-            document.getElementById('liveClock').textContent = timeString;
-        }
-        setInterval(updateClock, 1000);
-        updateClock();
-
-        // 访客计数器
-        function updateVisitCount() {
-            let visits = localStorage.getItem('visitCount') || 0;
-            visits = parseInt(visits) + 1;
-            localStorage.setItem('visitCount', visits);
-            document.getElementById('visitCount').textContent = visits;
-            
-            // 今日访问量
-            const today = new Date().toDateString();
-            let todayVisits = localStorage.getItem('todayVisits');
-            let lastVisitDate = localStorage.getItem('lastVisitDate');
-            
-            if (lastVisitDate !== today) {
-                todayVisits = 0;
-                localStorage.setItem('lastVisitDate', today);
-            }
-            
-            todayVisits = parseInt(todayVisits || 0) + 1;
-            localStorage.setItem('todayVisits', todayVisits);
-            document.getElementById('todayVisits').textContent = todayVisits;
-            document.getElementById('totalVisits').textContent = visits;
-        }
-
-        // 在线时间统计
-        let onlineTime = 0;
-        function updateOnlineTime() {
-            onlineTime++;
-            document.getElementById('onlineTime').textContent = onlineTime;
-        }
-        setInterval(updateOnlineTime, 60000);
-
-        // 随机数据生成
-        function generateRandomData() {
-            const data = [
-                `随机数: ${Math.floor(Math.random() * 1000)}`,
-                `温度: ${(Math.random() * 40).toFixed(1)}°C`,
-                `进度: ${Math.floor(Math.random() * 100)}%`,
-                `评分: ${(Math.random() * 5).toFixed(1)} ⭐`
-            ];
-            const randomIndex = Math.floor(Math.random() * data.length);
-            document.getElementById('randomData').textContent = data[randomIndex];
-        }
-
-        // 颜色生成器
-        function changeColor() {
-            const colors = ['#FF6B6B', '#4ECDC4', '#45B7D1', '#96CEB4', '#FFEAA7', '#DDA0DD', '#98D8C8', '#F7DC6F'];
-            const randomColor = colors[Math.floor(Math.random() * colors.length)];
-            document.getElementById('colorBox').style.backgroundColor = randomColor;
-        }
-
-        // 计算器功能
-        let display = document.getElementById('calcDisplay');
-        
-        function appendToDisplay(value) {
-            display.value += value;
-        }
-        
-        function clearDisplay() {
-            display.value = '';
-        }
-        
-        function deleteLast() {
-            display.value = display.value.slice(0, -1);
-        }
-        
-        function calculate() {
-            try {
-                display.value = eval(display.value);
-            } catch (error) {
-                display.value = '错误';
-            }
-        }
-
-        // 待办事项
-        let todos = JSON.parse(localStorage.getItem('todos')) || [];
-        
-        function renderTodos() {
-            const todoList = document.getElementById('todoList');
-            todoList.innerHTML = '';
-            
-            todos.forEach((todo, index) => {
-                const todoItem = document.createElement('div');
-                todoItem.className = `todo-item ${todo.completed ? 'completed' : ''}`;
-                todoItem.innerHTML = `
-                    <span>${todo.text}</span>
-                    <div>
-                        <button onclick="toggleTodo(${index})" style="margin-left: 10px; padding: 5px 10px; background: #4CAF50; color: white; border: none; border-radius: 3px; cursor: pointer;">${todo.completed ? '重置' : '完成'}</button>
-                        <button onclick="deleteTodo(${index})" style="margin-left: 10px; padding: 5px 10px; background: #ff4444; color: white; border: none; border-radius: 3px; cursor: pointer;">删除</button>
-                    </div>
-                `;
-                todoList.appendChild(todoItem);
-            });
-        }
-        
-        function addTodo() {
-            const input = document.getElementById('todoInput');
-            const text = input.value.trim();
-            
-            if (text) {
-                todos.push({ text, completed: false });
-                localStorage.setItem('todos', JSON.stringify(todos));
-                input.value = '';
-                renderTodos();
-            }
-        }
-        
-        function toggleTodo(index) {
-            todos[index].completed = !todos[index].completed;
-            localStorage.setItem('todos', JSON.stringify(todos));
-            renderTodos();
-        }
-        
-        function deleteTodo(index) {
-            todos.splice(index, 1);
-            localStorage.setItem('todos', JSON.stringify(todos));
-            renderTodos();
-        }
-
-        // 猜数字游戏
-        let randomNumber = Math.floor(Math.random() * 100) + 1;
-        let guessAttempts = 0;
-        
-        function checkGuess() {
-            const guess = parseInt(document.getElementById('guessInput').value);
-            const result = document.getElementById('guessResult');
-            
-            if (isNaN(guess)) {
-                result.textContent = '请输入有效数字!';
-                return;
-            }
-            
-            guessAttempts++;
-            
-            if (guess === randomNumber) {
-                result.textContent = `恭喜! 你在 ${guessAttempts} 次尝试后猜对了!`;
-                result.style.color = 'green';
-                randomNumber = Math.floor(Math.random() * 100) + 1;
-                guessAttempts = 0;
-            } else if (guess < randomNumber) {
-                result.textContent = '太小了! 再试一次。';
-                result.style.color = 'blue';
-            } else {
-                result.textContent = '太大了! 再试一次。';
-                result.style.color = 'red';
-            }
-        }
-
-        // 反应测试
-        let reactionStartTime;
-        
-        function startReactionTest() {
-            const btn = document.getElementById('reactionBtn');
-            const result = document.getElementById('reactionResult');
-            
-            btn.textContent = '等待...';
-            btn.style.background = '#ff4444';
-            btn.disabled = true;
-            result.textContent = '';
-            
-            const waitTime = Math.random() * 3000 + 1000; // 1-4秒随机等待
-            
-            setTimeout(() => {
-                btn.textContent = '点击现在!';
-                btn.style.background = '#4CAF50';
-                btn.disabled = false;
-                reactionStartTime = new Date().getTime();
-                
-                btn.onclick = function() {
-                    const reactionTime = new Date().getTime() - reactionStartTime;
-                    result.textContent = `你的反应时间: ${reactionTime} 毫秒`;
-                    btn.onclick = startReactionTest;
-                };
-            }, waitTime);
-        }
-
-        // 天气信息（模拟）
-        function getWeather() {
-            const weatherConditions = ['晴朗 ☀️', '多云 ⛅', '小雨 🌧️', '雷阵雨 ⛈️', '下雪 ❄️'];
-            const randomWeather = weatherConditions[Math.floor(Math.random() * weatherConditions.length)];
-            const temperature = Math.floor(Math.random() * 35) + 5;
-            
-            document.getElementById('weatherInfo').innerHTML = `
-                <strong>${randomWeather}</strong><br>
-                温度: ${temperature}°C<br>
-                湿度: ${Math.floor(Math.random() * 50) + 50}%
-            `;
-        }
-
-        // 最后更新时间
-        document.getElementById('lastUpdate').textContent = new Date().toLocaleDateString('zh-CN');
-
-        // 初始化
-        document.addEventListener('DOMContentLoaded', function() {
-            updateVisitCount();
-            renderTodos();
-            changeColor();
-            generateRandomData();
+    
+    // 基础功能
+    function showSection(sectionId) {
+        // 隐藏所有部分
+        document.querySelectorAll('.section').forEach(section => {
+            section.classList.remove('active');
         });
-        // 复制之前版本中的所有JavaScript函数到这里
-        // 包括：showSection, toggleTheme, updateClock, 计算器功能, 游戏功能等
-        // 由于篇幅限制，这里不重复展示，请从你之前的代码中复制过来
-    </script>
+        
+        // 移除所有导航激活状态
+        document.querySelectorAll('.nav-item').forEach(item => {
+            item.classList.remove('active');
+        });
+        
+        // 显示选中部分
+        document.getElementById(sectionId).classList.add('active');
+        
+        // 激活对应导航
+        event.target.classList.add('active');
+    }
+
+    function toggleTheme() {
+        document.body.classList.toggle('dark-mode');
+    }
+
+    // 实时时钟
+    function updateClock() {
+        const now = new Date();
+        const timeString = now.toLocaleTimeString();
+        document.getElementById('liveClock').textContent = timeString;
+    }
+    setInterval(updateClock, 1000);
+    updateClock();
+
+    // 在线时间统计
+    let onlineTime = 0;
+    function updateOnlineTime() {
+        onlineTime++;
+        document.getElementById('onlineTime').textContent = onlineTime;
+    }
+    setInterval(updateOnlineTime, 60000);
+
+    // 随机数据生成
+    function generateRandomData() {
+        const data = [
+            `随机数: ${Math.floor(Math.random() * 1000)}`,
+            `温度: ${(Math.random() * 40).toFixed(1)}°C`,
+            `进度: ${Math.floor(Math.random() * 100)}%`,
+            `评分: ${(Math.random() * 5).toFixed(1)} ⭐`
+        ];
+        const randomIndex = Math.floor(Math.random() * data.length);
+        document.getElementById('randomData').textContent = data[randomIndex];
+    }
+
+    // 颜色生成器
+    function changeColor() {
+        const colors = ['#FF6B6B', '#4ECDC4', '#45B7D1', '#96CEB4', '#FFEAA7', '#DDA0DD', '#98D8C8', '#F7DC6F'];
+        const randomColor = colors[Math.floor(Math.random() * colors.length)];
+        document.getElementById('colorBox').style.backgroundColor = randomColor;
+    }
+
+    // 计算器功能
+    let display = document.getElementById('calcDisplay');
+    
+    function appendToDisplay(value) {
+        display.value += value;
+    }
+    
+    function clearDisplay() {
+        display.value = '';
+    }
+    
+    function deleteLast() {
+        display.value = display.value.slice(0, -1);
+    }
+    
+    function calculate() {
+        try {
+            display.value = eval(display.value);
+        } catch (error) {
+            display.value = '错误';
+        }
+    }
+
+    // 猜数字游戏
+    let randomNumber = Math.floor(Math.random() * 100) + 1;
+    let guessAttempts = 0;
+    
+    function checkGuess() {
+        const guess = parseInt(document.getElementById('guessInput').value);
+        const result = document.getElementById('guessResult');
+        
+        if (isNaN(guess)) {
+            result.textContent = '请输入有效数字!';
+            return;
+        }
+        
+        guessAttempts++;
+        
+        if (guess === randomNumber) {
+            result.textContent = `恭喜! 你在 ${guessAttempts} 次尝试后猜对了!`;
+            result.style.color = 'green';
+            randomNumber = Math.floor(Math.random() * 100) + 1;
+            guessAttempts = 0;
+        } else if (guess < randomNumber) {
+            result.textContent = '太小了! 再试一次。';
+            result.style.color = 'blue';
+        } else {
+            result.textContent = '太大了! 再试一次。';
+            result.style.color = 'red';
+        }
+    }
+
+    // 反应测试
+    let reactionStartTime;
+    
+    function startReactionTest() {
+        const btn = document.getElementById('reactionBtn');
+        const result = document.getElementById('reactionResult');
+        
+        btn.textContent = '等待...';
+        btn.style.background = '#ff4444';
+        btn.disabled = true;
+        result.textContent = '';
+        
+        const waitTime = Math.random() * 3000 + 1000; // 1-4秒随机等待
+        
+        setTimeout(() => {
+            btn.textContent = '点击现在!';
+            btn.style.background = '#4CAF50';
+            btn.disabled = false;
+            reactionStartTime = new Date().getTime();
+            
+            btn.onclick = function() {
+                const reactionTime = new Date().getTime() - reactionStartTime;
+                result.textContent = `你的反应时间: ${reactionTime} 毫秒`;
+                btn.onclick = startReactionTest;
+            };
+        }, waitTime);
+    }
+
+    // 天气信息（模拟）
+    function getWeather() {
+        const weatherConditions = ['晴朗 ☀️', '多云 ⛅', '小雨 🌧️', '雷阵雨 ⛈️', '下雪 ❄️'];
+        const randomWeather = weatherConditions[Math.floor(Math.random() * weatherConditions.length)];
+        const temperature = Math.floor(Math.random() * 35) + 5;
+        
+        document.getElementById('weatherInfo').innerHTML = `
+            <strong>${randomWeather}</strong><br>
+            温度: ${temperature}°C<br>
+            湿度: ${Math.floor(Math.random() * 50) + 50}%
+        `;
+    }
+
+    // 记忆游戏（简单实现）
+    function startMemoryGame() {
+        alert('记忆游戏功能开发中...');
+    }
+
+    // 初始化
+    document.addEventListener('DOMContentLoaded', function() {
+        // 用户系统初始化已经在第一个script标签中完成
+        changeColor();
+        generateRandomData();
+    });
+</script>
 </body>
 </html>
